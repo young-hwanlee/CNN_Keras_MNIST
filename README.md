@@ -1,1 +1,1 @@
-# simple_neural_net_MNIST
+# Convolutional Neural Network (CNN) in Keras Using MNIST
