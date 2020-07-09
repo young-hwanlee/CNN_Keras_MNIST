@@ -9,7 +9,8 @@ from tensorflow.python.keras import utils
 from tensorflow.python.keras.datasets import mnist
 from tensorflow.python.keras.callbacks import ReduceLROnPlateau
 
-seed=42    # for reproducibility
+## Set up the seed for reproducibility.
+seed=42
 tf.reset_default_graph()
 tf.set_random_seed(seed)
 np.random.seed(seed)
