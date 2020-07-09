@@ -1,6 +1,11 @@
+#%%
+import os
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+
 ## Import libraries and modules
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
 
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense, Dropout, Activation, Flatten
@@ -26,8 +31,15 @@ X_test = X_test.astype('float32')
 X_train /= 255
 X_test /= 255
 
+## Reserve 10,000 samples for validation
+X_train = X_train[:-10000]
+y_train = y_train[:-10000]
+X_val = X_train[-10000:]
+y_val = y_train[-10000:]
+
 ## Preprocess class labels
 Y_train = utils.to_categorical(y_train, 10)
+Y_val = utils.to_categorical(y_val, 10)
 Y_test = utils.to_categorical(y_test, 10)
 
 ## Define model architecture
@@ -48,10 +60,40 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 ## Fit model on training data
-model.fit(X_train, Y_train, 
-          batch_size=32, nb_epoch=10, verbose=1)
+history = model.fit(X_train, Y_train, validation_data=(X_val, Y_val),
+                    batch_size=32, nb_epoch=10, verbose=1)
 
 ## Evaluate model on test data
 score = model.evaluate(X_test, Y_test, verbose=0)
+
+#%%
+## Check the results
+# Plots the loss
+plt.figure()
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'validation'], loc='upper right')
+plt.show()
+
+# Plots the accuracy
+plt.figure()
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'validation'], loc='upper left')
+plt.show()
+
+## Predict using the test dataset
+Y_pred = model.predict(X_test)
+X_test__ = X_test.reshape(X_test.shape[0], 28, 28)
+
+fig, axis = plt.subplots(2, 5, figsize=(12, 14))
+for i, ax in enumerate(axis.flat):
+    ax.imshow(X_test__[i], cmap='binary')
+    ax.set(title = f"Real Number is {Y_test[i].argmax()}\n"
+                   f"Predict Number is {Y_pred[i].argmax()}")
 
 
