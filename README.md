@@ -1,4 +1,5 @@
 # Convolutional Neural Network (CNN) in Keras Using MNIST
+An implementation of CNN for MNIST
 
 ## Results
 ### 1. Loss
